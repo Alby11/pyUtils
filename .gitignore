@@ -175,3 +175,4 @@ cython_debug/
 *.vsix
 mclip
 mclip.exe
+mclip.build/

@@ -21,7 +21,7 @@ if len(sys.argv) < 2:
 
     myclip [keyphrase] -- to put a keyphase into clipboard
     myclip generate -- to generate a password following "MonthYY!!" pattern
-    myclip genrandom -- to generate a random pw
+    myclip random -- to generate a random pw
     ''')
     sys.exit()
 
