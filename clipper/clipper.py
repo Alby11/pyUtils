@@ -14,7 +14,6 @@ TEXT = {'ok': 'Ok, grazie.',
         'dispo': 'Resto a disposizione, grazie.',
         }
 
-
 if len(sys.argv) < 2:
     print('''
     Usage:
