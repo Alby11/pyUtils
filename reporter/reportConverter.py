@@ -18,30 +18,21 @@ file_list = os.listdir(directory_path)
 # Use glob to filter out JSON files
 json_files = glob.glob(directory_path + '*.json')
 
-# Loop through the JSON files and convert them to PDF
+# Loop through the JSON files and load them
 for file_path in json_files:
     # Open the JSON file
     with open(file_path, 'r') as json_file:
         data = json.load(json_file)
 
+df = pd.DataFrame(data)
 
+html = (df.style
+            .set_table_styles([{'selector': 'th', 'props': [('background', '#3498db'),('color', 'white')]}])
+            .set_properties(**{'font-size': '14px', 'font-family': 'Calibri', 'border-collapse': 'collapse', 'border': '2px solid black', 'text-align': 'center'})
+            .set_caption('Table Title')
+            .set_table_attributes('border="1" class="dataframe table table-hover table-bordered"')
+            .to_html()
+      )
 
-# Create an instance of the FPDF class
-pdf = FPDF()
-
-pdf.add_page()
-
-#    Loop through the keys in the JSON data and add them as section titles to the PDF document:
-#    Loop through the values in the JSON data and add them as section content to the PDF document:
-
-for key in data:
-    pdf.set_font('Arial', 'B', 16)
-    spaces = len(key)
-    pdf.cell(0, 10, key + ": " + ('' * spaces) + str(data[key]), ln=1)
-    # pdf.set_font('Arial', 'B', 12)
-    # pdf.cell(0, 10, ": " + ('' * spaces) + data[key], ln=1)
-
-
-
-#    Output the finished PDF document:
-pdf.output('output.pdf', 'F')
+with open('output.html', 'w') as f:
+    f.write(html)

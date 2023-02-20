@@ -27,9 +27,9 @@ class Watcher(FileSystemEventHandler):
             json_file.close()
 
             # Send the PDF file by email
-            sender_email = 'sender@example.com'
+            sender_email = 'albertotallone@gmail.com'
             sender_password = 'password'
-            recipient_email = 'recipient@example.com'
+            recipient_email = 'a.tallone@oliocarli.it'
             subject = 'Converted JSON file'
             message = MIMEMultipart()
             message['From'] = sender_email
@@ -50,7 +50,7 @@ class Watcher(FileSystemEventHandler):
             print('Email sent')
 
 if __name__ == "__main__":
-    folder_path = '.'
+    folder_path = './'
     event_handler = Watcher()
     observer = Observer()
     observer.schedule(event_handler, folder_path, recursive=True)

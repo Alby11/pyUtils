@@ -1,2 +1,6 @@
 watchdog
 reportlab
+fpdf
+pandas
+pretty_html_table
+jinja2
