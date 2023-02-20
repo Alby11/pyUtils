@@ -1,9 +1,11 @@
 import os
 import glob
+import pandas as pd
 import json
 from fpdf import FPDF
 from reportlab.pdfgen import canvas
-
+from pretty_html_table import build_table
+# html_table = build_table(df_signal, 'grey_dark')
 # Set directory path
 directory_path = './'
 
@@ -21,37 +23,25 @@ for file_path in json_files:
     # Open the JSON file
     with open(file_path, 'r') as json_file:
         data = json.load(json_file)
-#     
-#     # Create a PDF object
-#     pdf = FPDF()
-#     
-#     # Add a new page
-#     pdf.add_page()
-#     
-#     # Add content to the PDF
-#     pdf.set_font('Arial', 'B', 16)
-#     pdf.cell(40, 10, 'JSON to PDF')
-#     pdf.ln()
-#     pdf.set_font('Arial', '', 12)
-#     pdf.multi_cell(0, 10, str(data))
-#     
-#     # Save the PDF file
-#     output_file_name = os.path.basename(file_path).replace('.json', '.pdf')
-#     output_file_path = os.path.join(output_directory_path, output_file_name)
-#      pdf.output(output_file_path, 'F')
 
 
 
-# Load the JSON data from a file
-# with open('data.json', 'r') as file:
-#     data = json.load(file)
+# Create an instance of the FPDF class
+pdf = FPDF()
 
-# Create a new PDF document
-pdf = canvas.Canvas('output.pdf')
+pdf.add_page()
 
-# Add content to the PDF
-pdf.drawString(100, 750, "DATA_SPED: " + data['DATA_SPED'])
-pdf.drawString(100, 700, "TITOLO: " + data['TITOLO'])
+#    Loop through the keys in the JSON data and add them as section titles to the PDF document:
+#    Loop through the values in the JSON data and add them as section content to the PDF document:
 
-# Save the PDF
-pdf.save()
+for key in data:
+    pdf.set_font('Arial', 'B', 16)
+    spaces = len(key)
+    pdf.cell(0, 10, key + ": " + ('' * spaces) + str(data[key]), ln=1)
+    # pdf.set_font('Arial', 'B', 12)
+    # pdf.cell(0, 10, ": " + ('' * spaces) + data[key], ln=1)
+
+
+
+#    Output the finished PDF document:
+pdf.output('output.pdf', 'F')
