@@ -1,38 +1,63 @@
-import os
-import glob
-import pandas as pd
 import json
-from fpdf import FPDF
-from reportlab.pdfgen import canvas
-from pretty_html_table import build_table
-# html_table = build_table(df_signal, 'grey_dark')
-# Set directory path
-directory_path = './'
+import pandas as pd
 
-# Set output directory path
-output_directory_path = './'
+# Load the JSON file
+with open('example.json') as f:
+    data = json.load(f)
 
-# Get a list of files in the directory
-file_list = os.listdir(directory_path)
+# Create a DataFrame from the JSON file
+df = pd.json_normalize(data, record_path='RIGHE', meta=['DATA_SPED', 'TITOLO', 'PROGR_SPED', 'DESTINATARI'])
 
-# Use glob to filter out JSON files
-json_files = glob.glob(directory_path + '*.json')
+# Remove any empty rows
+df = df.dropna(how='all')
 
-# Loop through the JSON files and load them
-for file_path in json_files:
-    # Open the JSON file
-    with open(file_path, 'r') as json_file:
-        data = json.load(json_file)
+# Define a recursive function to generate HTML code for each level
+def build_html(row):
+    html = '<tr>'
+    for index, value in row.iteritems():
+        if isinstance(value, pd.DataFrame):
+            html += build_html(value.iloc[0])
+        else:
+            html += f'<td>{value}</td>'
+    html += '</tr>'
+    return html
 
-df = pd.DataFrame(data)
+# Generate HTML code for each row in the DataFrame
+html = ''
+for index, row in df.iterrows():
+    html += build_html(row)
 
-html = (df.style
-            .set_table_styles([{'selector': 'th', 'props': [('background', '#3498db'),('color', 'white')]}])
-            .set_properties(**{'font-size': '14px', 'font-family': 'Calibri', 'border-collapse': 'collapse', 'border': '2px solid black', 'text-align': 'center'})
-            .set_caption('Table Title')
-            .set_table_attributes('border="1" class="dataframe table table-hover table-bordered"')
-            .to_html()
-      )
+# Generate the final HTML report
+final_html = f'''
+<html>
+    <head>
+        <title>{data['TITOLO']}</title>
+    </head>
+    <body>
+        <h1>{data['TITOLO']}</h1>
+        <p>Data spedizione: {data['DATA_SPED']}</p>
+        <p>Prog. spedizione: {data['PROGR_SPED']}</p>
+        <p>Destinatari: {data['DESTINATARI']}</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>UDS</th>
+                    <th>COD_ARTMGZ</th>
+                    <th>COD_CLIENTE</th>
+                    <th>NOMINATIVO</th>
+                    <th>D_ARTMGZ</th>
+                    <th>PROGR_ETIC</th>
+                    <th>QTA</th>
+                </tr>
+            </thead>
+            <tbody>
+                {html}
+            </tbody>
+        </table>
+    </body>
+</html>
+'''
 
-with open('output.html', 'w') as f:
-    f.write(html)
+# Save the HTML report to a file
+with open('report.html', 'w') as f:
+    f.write(final_html)
